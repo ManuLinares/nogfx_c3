@@ -1,0 +1,16 @@
+#version 460
+#extension GL_EXT_buffer_reference : require
+#extension GL_EXT_scalar_block_layout : require
+
+// The root is the uniform buffer at set 0, binding 0: the backend maps it to the pointer that draw / dispatch push. Scalar layout is C layout.
+layout(buffer_reference, scalar) readonly buffer Source { float values[]; };
+layout(buffer_reference, scalar) buffer Destination { float values[]; };
+layout(set = 0, binding = 0, scalar) uniform Root { Source source; Destination destination; uint count; float factor; } root;
+
+layout(local_size_x = 64) in;
+
+void main()
+{
+	uint id = gl_GlobalInvocationID.x;
+	if (id < root.count) root.destination.values[id] = root.source.values[id] * root.factor + 1.0;
+}

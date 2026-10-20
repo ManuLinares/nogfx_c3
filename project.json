@@ -1,0 +1,69 @@
+{
+  "version": "0.1.0",
+  "langrev": "1",
+  "warnings": [
+    "no-unused"
+  ],
+  "sources": [
+    "src"
+  ],
+  "targets": {
+    "headless": {
+      "type": "executable",
+      "sources": [
+        "tests/headless.c3"
+      ]
+    },
+    "concurrency": {
+      "type": "executable",
+      "sources": [
+        "tests/concurrency.c3"
+      ]
+    },
+    "features": {
+      "type": "executable",
+      "sources": [
+        "tests/features.c3"
+      ]
+    },
+    "triangle": {
+      "type": "executable",
+      "sources": [
+        "examples/triangle.c3"
+      ]
+    },
+    "vk_headless": {
+      "type": "executable",
+      "features": [
+        "NOGFX_VULKAN"
+      ],
+      "sources": [
+        "tests/vk_headless.c3"
+      ]
+    },
+    "fake_vulkan": {
+      "type": "dynamic-lib",
+      "features": [
+        "NOGFX_VULKAN"
+      ],
+      "sources": [
+        "tests/fake_vulkan/fake_vulkan.c3"
+      ]
+    },
+    "fake_features": {
+      "type": "executable",
+      "features": [
+        "NOGFX_VULKAN"
+      ],
+      "sources": [
+        "tests/fake_features.c3"
+      ]
+    },
+    "timeline": {
+      "type": "executable",
+      "sources": [
+        "tests/timeline.c3"
+      ]
+    }
+  }
+}
