@@ -41,6 +41,12 @@
         "examples/triangle_vk.c3"
       ]
     },
+    "triangle_generic": {
+      "type": "executable",
+      "sources": [
+        "examples/triangle_generic.c3"
+      ]
+    },
     "vk_headless": {
       "type": "executable",
       "features": [
