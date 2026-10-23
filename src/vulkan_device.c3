@@ -454,11 +454,11 @@ fn SurfaceMaintenance? Device.create_instance(&self, DeviceDesc* desc)
 	vk.load_global();
 	if (!vk.vkEnumerateInstanceVersion || !vk.vkEnumerateInstanceExtensionProperties || !vk.vkCreateInstance)
 	{
-		return fail(UNSUPPORTED, "Vulkan 1.4 or newer is required. Update the graphics driver.")~;
+		return fail(UNSUPPORTED, "Vulkan 1.1 or newer loader is required.")~;
 	}
-	uint loader_version = VK_API_VERSION_1_0;
+	uint loader_version;
 	check_vk(vk.vkEnumerateInstanceVersion(&loader_version), "vkEnumerateInstanceVersion")!;
-	if (loader_version < VK_API_VERSION_1_4) return fail(UNSUPPORTED, "Vulkan 1.4 or newer is required. Update the graphics driver.")~;
+	if (loader_version < vk_make_api_version(0, 1, 1, 0)) return fail(UNSUPPORTED, "Vulkan 1.1 or newer loader is required.")~;
 
 	VkExtensionProperties[] instance_extension_storage = mem::new_array(VkExtensionProperties, MAX_INSTANCE_EXTENSIONS)[:MAX_INSTANCE_EXTENSIONS];
 	defer mem::free(instance_extension_storage.ptr);
