@@ -32,6 +32,15 @@
         "examples/triangle.c3"
       ]
     },
+    "triangle_vk": {
+      "type": "executable",
+      "features": [
+        "NOGFX_VULKAN"
+      ],
+      "sources": [
+        "examples/triangle_vk.c3"
+      ]
+    },
     "vk_headless": {
       "type": "executable",
       "features": [
