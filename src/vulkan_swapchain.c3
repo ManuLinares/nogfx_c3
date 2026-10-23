@@ -133,13 +133,22 @@ fn void? recreate_swapchain(Swapchain* swapchain) @private
 
 	Uint2 resolved = resolve_surface_extent(device, capabilities);
 	VkExtent2D extent = { resolved.x, resolved.y };
-	if ((capabilities.supportedUsageFlags & VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT) == 0) return UNSUPPORTED~;
+	if ((capabilities.supportedUsageFlags & VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT) == 0)
+	{
+		report("Surface does not support color attachment usage.");
+		return UNSUPPORTED~;
+	}
 
-	VkSurfaceFormatKHR[MAX_SURFACE_FORMATS] formats;
 	uint surface_format_count;
 	check_vk(vk.vkGetPhysicalDeviceSurfaceFormatsKHR(device.physical_device, device.surface, &surface_format_count, null), "vkGetPhysicalDeviceSurfaceFormatsKHR")!;
-	if (surface_format_count == 0 || surface_format_count > MAX_SURFACE_FORMATS) return UNSUPPORTED~;
-	check_vk(vk.vkGetPhysicalDeviceSurfaceFormatsKHR(device.physical_device, device.surface, &surface_format_count, &formats[0]), "vkGetPhysicalDeviceSurfaceFormatsKHR")!;
+	if (surface_format_count == 0)
+	{
+		report("Surface returned zero supported formats.");
+		return UNSUPPORTED~;
+	}
+	VkSurfaceFormatKHR[] formats = mem::new_array(VkSurfaceFormatKHR, surface_format_count);
+	defer mem::free(formats.ptr);
+	check_vk(vk.vkGetPhysicalDeviceSurfaceFormatsKHR(device.physical_device, device.surface, &surface_format_count, formats.ptr), "vkGetPhysicalDeviceSurfaceFormatsKHR")!;
 
 	VkFormat requested_format = vk_format(swapchain.format);
 	bool format_supported;
@@ -151,7 +160,11 @@ fn void? recreate_swapchain(Swapchain* swapchain) @private
 			break;
 		}
 	}
-	if (!format_supported) return UNSUPPORTED~;
+	if (!format_supported)
+	{
+		report(string::tformat("Requested swapchain format %d with colorspace %d is unsupported by surface.", (int)requested_format, (int)swapchain.color_space));
+		return UNSUPPORTED~;
+	}
 
 	if (extent.width == 0 || extent.height == 0)
 	{
