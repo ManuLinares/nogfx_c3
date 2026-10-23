@@ -331,7 +331,7 @@ struct SurfaceProvider
 struct DeviceDesc
 {
 	void* window;                       // A CAMetalLayer* (Metal) or an HWND (Vulkan Win32). Null creates a headless device.
-	SurfaceProvider* surface_provider;  // Vulkan surface provider for platforms without a native HWND (Linux/BSD).
+	SurfaceProvider surface_provider;   // Vulkan surface provider for platforms without a native HWND (Linux/BSD).
 	Format swapchain_format;            // Zero is BGRA8_UNORM. Metal: BGRA8_UNORM or BGRA8_SRGB. Vulkan: any format the surface offers.
 	ColorSpace swapchain_color_space;
 	uint desired_swapchain_image_count; // Zero is 2. Metal clamps to 2..3 drawables; Vulkan takes 1..8 presentation contexts.

@@ -88,7 +88,7 @@ fn Uint2 resolve_surface_extent(Device* device, VkSurfaceCapabilitiesKHR* caps) 
 	{
 		return { caps.currentExtent.width, caps.currentExtent.height };
 	}
-	if (device.surface_provider && device.surface_provider.get_extent)
+	if (device.surface_provider.get_extent)
 	{
 		Uint2 size = device.surface_provider.get_extent(device.surface_provider.user_data);
 		if (size.x == 0 || size.y == 0) return {};

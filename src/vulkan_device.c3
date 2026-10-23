@@ -428,7 +428,7 @@ fn void? Device.init(&self, DeviceDesc* desc)
 	self.texture_memory_type = VK_MAX_MEMORY_TYPES;
 	self.heap_properties.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_DESCRIPTOR_HEAP_PROPERTIES_EXT;
 	self.surface_provider = desc.surface_provider;
-	self.presentation = desc.window != null || desc.surface_provider != null;
+	self.presentation = desc.window != null || desc.surface_provider.create_surface != null;
 	self.timestamp_query_count = desc.timestamp_query_count;
 	self.present_context_count = self.presentation ? desc.desired_swapchain_image_count : 0;
 
@@ -444,7 +444,7 @@ fn void? Device.init(&self, DeviceDesc* desc)
 // Opens the loader and creates the instance, the debug messenger when validation is on, and the surface of the window.
 fn SurfaceMaintenance? Device.create_instance(&self, DeviceDesc* desc)
 {
-	bool presentation = desc.window != null || desc.surface_provider != null;
+	bool presentation = desc.window != null || desc.surface_provider.create_surface != null;
 	os::DylibHandle? loader = open_loader();
 	if (catch loader) return fail(UNSUPPORTED, "The Vulkan loader was not found: install a Vulkan driver.")~;
 	self.loader = loader;
@@ -478,9 +478,9 @@ fn SurfaceMaintenance? Device.create_instance(&self, DeviceDesc* desc)
 		if (!has_extension(instance_extensions, VK_KHR_SURFACE_EXTENSION_NAME)) missing.push(VK_KHR_SURFACE_EXTENSION_NAME);
 		if (!has_extension(instance_extensions, VK_KHR_GET_SURFACE_CAPABILITIES_2_EXTENSION_NAME)) missing.push(VK_KHR_GET_SURFACE_CAPABILITIES_2_EXTENSION_NAME);
 		$if env::WIN32:
-			if (!desc.surface_provider && !has_extension(instance_extensions, VK_KHR_WIN32_SURFACE_EXTENSION_NAME)) missing.push(VK_KHR_WIN32_SURFACE_EXTENSION_NAME);
+			if (!desc.surface_provider.create_surface && !has_extension(instance_extensions, VK_KHR_WIN32_SURFACE_EXTENSION_NAME)) missing.push(VK_KHR_WIN32_SURFACE_EXTENSION_NAME);
 		$endif
-		if (desc.surface_provider)
+		if (desc.surface_provider.create_surface)
 		{
 			foreach (ext : desc.surface_provider.required_extensions)
 			{
@@ -519,9 +519,9 @@ fn SurfaceMaintenance? Device.create_instance(&self, DeviceDesc* desc)
 		instance_names.push(VK_KHR_SURFACE_EXTENSION_NAME);
 		instance_names.push(VK_KHR_GET_SURFACE_CAPABILITIES_2_EXTENSION_NAME);
 		$if env::WIN32:
-			if (!desc.surface_provider) instance_names.push(VK_KHR_WIN32_SURFACE_EXTENSION_NAME);
+			if (!desc.surface_provider.create_surface) instance_names.push(VK_KHR_WIN32_SURFACE_EXTENSION_NAME);
 		$endif
-		if (desc.surface_provider)
+		if (desc.surface_provider.create_surface)
 		{
 			foreach (ext : desc.surface_provider.required_extensions) instance_names.push(ext);
 		}
@@ -561,7 +561,7 @@ fn SurfaceMaintenance? Device.create_instance(&self, DeviceDesc* desc)
 		check_vk(vk.vkCreateDebugUtilsMessengerEXT(self.instance, &debug_info, null, &self.debug_messenger), "vkCreateDebugUtilsMessengerEXT")!;
 	}
 
-	if (desc.surface_provider)
+	if (desc.surface_provider.create_surface)
 	{
 		ulong? surf = desc.surface_provider.create_surface((void*)self.instance, desc.surface_provider.user_data);
 		if (catch surf) return fail(DRIVER_ERROR, "surface creation callback failed")~;

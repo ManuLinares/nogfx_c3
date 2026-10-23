@@ -564,7 +564,7 @@ struct Device
 	uint present_context_count;
 	uint next_present_context;
 	bool presentation;
-	SurfaceProvider* surface_provider;
+	SurfaceProvider surface_provider;
 }
 
 // ---- Device memory --------------------------------------------------------------------------------------------------------------

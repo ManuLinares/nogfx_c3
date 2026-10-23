@@ -94,7 +94,7 @@ fn int main()
 	};
 
 	device = nogfx::create_device({
-		.surface_provider = &provider,
+		.surface_provider = provider,
 		.swapchain_format = BGRA8_UNORM,
 		.desired_swapchain_image_count = 3,
 	})!!;
